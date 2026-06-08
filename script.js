@@ -1,333 +1,383 @@
-const songPlaylist = [
-      { title: "This Time",     artist: "Jeff Bernat", url: "./songs/this_time.mp3", color: "from-[#800020] to-[#E0B0FF]" },
-      { title: "Hold On Tight",      artist: "Jesse Barrera, Albert Posis",                    url: "./songs/hold_on_tight.mp3", color: "from-[#800020] to-[#FFC0CB]" },
-      { title: "Easy",       artist: "Mac Ayres",                      url: "./songs/easy.mp3", color: "from-[#4A1525] to-[#E6E6FA]" },
-      { title: "Lemonade", artist: "Jeremy Passion, Melissa Polinar, Gabe Bondoc",                      url: "./songs/lemonade.mp3", color: "from-[#800020] to-[#FFE4E1]" }
-    ];
+let audioCtx = null, synthTimer = null, synthOn = false;
+const arpeggios = [
+  {f:329.63,d:0.6},{f:392,d:0.6},{f:440,d:0.6},{f:523.25,d:0.8},
+  {f:493.88,d:0.6},{f:392,d:0.6},{f:440,d:1},{f:349.23,d:0.6},
+  {f:392,d:0.6},{f:440,d:0.8}
+];
+let arpIdx = 0;
 
-    let currentTrackIndex = 0;
-    const audioEngine   = document.getElementById('audio-engine');
-    const trackNameEl   = document.getElementById('track-name');
-    const trackSingerEl = document.getElementById('track-singer');
-    const vinylDisc     = document.getElementById('vinyl-disc-rotating');
-    const tonearmSprite = document.getElementById('tonearm-sprite');
-    const vinylSticker  = document.getElementById('vinyl-sticker');
+function ensureAudio() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+}
+function startSynth() {
+  ensureAudio();
+  if (synthOn) return;
+  synthOn = true;
+  (function tick() {
+    if (!synthOn) return;
+    const a = arpeggios[arpIdx++ % arpeggios.length];
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'triangle';
+    osc.frequency.value = a.f;
+    gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + a.d);
+    osc.connect(gain); gain.connect(audioCtx.destination);
+    osc.start(); osc.stop(audioCtx.currentTime + a.d);
+    synthTimer = setTimeout(tick, 700);
+  })();
+}
+function stopSynth() { synthOn = false; clearTimeout(synthTimer); }
 
-    function getPlayBtn() { return document.getElementById('music-play-btn'); }
+const playlist = [
+  {
+    title: "Call You Mine",
+    artist: "Jeff Bernat & Blue Scholars",
+    memo: "This one plays when I'm pretending to do something else but really I'm just thinking about you. It's the song that sounds exactly like wanting someone to stay.",
+    url: "./songs/call_you_mine.mp3"
+  },
+  {
+    title: "Be My Mistake",
+    artist: "Jeff Bernat & Mac Ayres",
+    memo: "Rainy evenings, one pair of earbuds between us, talking about nothing and everything. That's the feeling this song lives in. That's where I want to stay.",
+    url: "./songs/call_you_mine.mp3"
+  },
+  {
+    title: "My Favorite Clothes",
+    artist: "boy pablo",
+    memo: "Light, a little goofy, and completely impossible to listen to without smiling. That's you, actually. You are my favorite color in a world that sometimes forgets to have any.",
+    url: "./songs/call_you_mine.mp3"
+  },
+  {
+    title: "Talk 2 Me",
+    artist: "RINI",
+    memo: "I've memorized the particular softness in your voice when you're sleepy. Hearing you talk is my favorite part of the day — I would listen to you say almost anything and still want more.",
+    url: "./songs/call_you_mine.mp3"
+  },
+  {
+    title: "Easy",
+    artist: "Mac Ayres",
+    memo: "With you I don't have to perform. Loving you is the most natural, effortless thing I have ever done. It feels less like a choice and more like breathing.",
+    url: "./songs/easy.mp3"
+  },
+  {
+    title: "Nothing",
+    artist: "Bruno Major",
+    memo: "We could sit in complete silence, doing absolutely nothing, and it would still be the best part of my week. Your quiet is my favorite kind of company.",
+    url: "./songs/call_you_mine.mp3"
+  },
+  {
+    title: "Always",
+    artist: "Daniel Caesar",
+    memo: "Through every mood and every season — I am yours. Happy first monthsary, my love. I choose you yesterday, today, and in every version of tomorrow I can imagine.",
+    url: "./songs/call_you_mine.mp3"
+  }
+];
 
-    function selectVinyl(index) {
-      currentTrackIndex = index;
-      const track = songPlaylist[index];
-      audioEngine.src = track.url;
-      trackNameEl.textContent   = track.title;
-      trackSingerEl.textContent = track.artist;
-      vinylSticker.className = `w-14 h-14 rounded-full bg-gradient-to-tr ${track.color} flex items-center justify-center border-2 border-white`;
-      playChimeSound();
-      playTrack();
-    }
+const letterText = `Happy 1st Monthsary, my favorite person. 🌿
 
-    function toggleMusicPlayback() {
-      audioEngine.paused ? playTrack() : pauseTrack();
-    }
+I made this little forest for you. Not because I'm particularly good at grand gestures, but because you love Totoro, and because somewhere in the past month I realized that being near you feels exactly like what that movie is about — the quiet comfort of knowing something wonderful is real.
 
-    function setPlayBtnIcon(icon) {
-      /* FIX: rebuild icon correctly instead of injecting raw lucide string */
-      const btn = getPlayBtn();
-      btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-        fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        ${icon === 'pause'
-          ? '<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>'
-          : '<polygon points="5 3 19 12 5 21 5 3"/>'}
-        </svg>`;
-    }
+Before you, I didn't really understand what people meant when they said someone could feel like home. I thought it was something you found in places. Turns out it was just a person I hadn't met yet.
 
-    function playTrack() {
-      audioEngine.play().then(() => {
-        setPlayBtnIcon('pause');
-        vinylDisc.classList.add('spin-vinyl');
-        tonearmSprite.style.transform = 'rotate(15deg)';
-      }).catch(e => console.warn('Autoplay blocked:', e));
-    }
+I love the version of myself that exists in our conversations. The one who doesn't second-guess every sentence. Who laughs without calculating it first. You did that. You made that feel possible.
 
-    function pauseTrack() {
-      audioEngine.pause();
-      setPlayBtnIcon('play');
-      vinylDisc.classList.remove('spin-vinyl');
-      tonearmSprite.style.transform = 'rotate(0deg)';
-    }
+I love how comfortable the silences are. How I never feel like I have to fill the space with something clever. How you'll say exactly what you're thinking and trust that I'll still be here after. I will always still be here after.
 
-    function prevTrack() {
-      currentTrackIndex = (currentTrackIndex - 1 + songPlaylist.length) % songPlaylist.length;
-      selectVinyl(currentTrackIndex);
-    }
-    function nextTrack() {
-      currentTrackIndex = (currentTrackIndex + 1) % songPlaylist.length;
-      selectVinyl(currentTrackIndex);
-    }
+I'm not great at saying these things out loud. But I wanted you to know — on the 24th of June, in some small digital corner shaped like a Ghibli film — that I am completely, entirely, ridiculously glad it's you.
 
-    audioEngine.addEventListener('ended', nextTrack);
+Happy monthsary, baby. Here's to all the next ones.
 
-    const lettersDatabase = {
-      story: `My Dearest,\n\nHappy 1st Monthiversary! 🌸\n\nLooking back at this past month, it feels like we lived inside a beautifully drawn Studio Ghibli world. From our very first chats to holding your hand, everything has been so serene, warm, and comforting.\n\nJust like Totoro waiting patiently in the quiet forest rain, I promise to always be there holding the umbrella for you whenever the world gets heavy.\n\nThank you for bringing your beautiful pink and purple sunsets into my life, and for making my heart skip a beat every time you smile. This is only the first chapter of our magical adventure! 🧸✨`,
+Yours, always,
+Your Boy 🌸`;
 
-      reasons: `10 Reasons I Adore You:\n\n1. The way your eyes sparkle when you're happy. ✨\n2. Your cute coquette style and love for tiny bows. 🎀\n3. The adorable rosy blush on your cheeks.\n4. How you make me feel perfectly cozy and safe.\n5. Your pure, childlike love for Totoro. 🍃\n6. Your beautiful taste in smooth R&B music. 🎵\n7. Your endless kindness and warm, sweet heart.\n8. How easily you turn my grayest days into pastel pink.\n9. Your absolute, unshakeable sweetness.\n10. Simply because you are YOU — my perfect match. 🌸`,
+let currentScene = 0, trackIdx = 0, playing = false;
+let typingTimer = null, typedIdx = 0;
+let umbrellaOpen = true, rainActive = false, noteTimer = null;
 
-      future: `To Our Cozy Future,\n\nMy Love,\n\nAs we look forward to the many months and years ahead, my heart is so incredibly full.\n\nI picture us in a quiet cottage, with soft neo-soul tunes playing in the background, surrounded by cute Totoro plushies, sipping sweet lavender tea, and laughing at the simplest things.\n\nWhatever future chapters the universe writes for us, I promise to walk beside you, holding your hand, protecting your smile, and loving you deeper with every passing day.\n\nHappy Monthiversary to my forever person! 🏠💖`
-    };
+const scenes  = document.querySelectorAll('.scene');
+const navBtns = document.querySelectorAll('.nav-btn');
+const sootEl  = document.getElementById('soot-overlay');
 
-    let typingTimer = null;
-    let typingIndex = 0;
-    let currentLetterText = '';
-    const typingBox        = document.getElementById('live-typing-container');
-    const letterStatusText = document.getElementById('letter-status-text');
+function changeScene(idx) {
+  if (idx === currentScene) return;
+  sootTransition(() => {
+    scenes[currentScene].classList.remove('active');
+    navBtns[currentScene].classList.remove('active');
+    scenes[idx].classList.add('active');
+    navBtns[idx].classList.add('active');
+    currentScene = idx;
+    if (idx === 3) startTyping();
+    else clearTimeout(typingTimer);
+  });
+}
 
-    function triggerLetterType(typeKey) {
-      playChimeSound();
-      if (typingTimer) clearTimeout(typingTimer);
-      currentLetterText = lettersDatabase[typeKey];
-      typingIndex = 0;
-      typingBox.textContent = '';
-      letterStatusText.textContent = `Writing "${typeKey}" letter live...`;
-      typeSequence();
-    }
+function sootTransition(cb) {
+  sootEl.style.pointerEvents = 'all';
+  sootEl.style.background = 'rgba(8,16,12,0.95)';
+  const N = 18, sprites = [];
+  for (let i = 0; i < N; i++) {
+    const s = document.createElement('div');
+    s.className = 'soot-sprite';
+    s.style.background = 'none';
+    s.innerHTML = `<img src="soot-sprite.png" style="width:100%;height:100%;object-fit:contain;border-radius:0;">`;
+    const edge = Math.floor(Math.random() * 4);
+    let x, y;
+    if(edge===0){x=Math.random()*100;y=-6;}
+    else if(edge===1){x=106;y=Math.random()*100;}
+    else if(edge===2){x=Math.random()*100;y=106;}
+    else{x=-6;y=Math.random()*100;}
+    s.style.cssText = `left:${x}%;top:${y}%;opacity:1;width:${Math.random()*28+50}px;height:${Math.random()*28+50}px`;
+    sootEl.appendChild(s);
+    sprites.push({el:s, tx:Math.random()*65+18, ty:Math.random()*65+18});
+  }
+  requestAnimationFrame(() => sprites.forEach(s => { s.el.style.left=s.tx+'%'; s.el.style.top=s.ty+'%'; }));
+  setTimeout(() => {
+    if(cb) cb();
+    sprites.forEach(s => {
+      const a = Math.random()*Math.PI*2, d = 140;
+      s.el.style.cssText += `;left:${s.tx+Math.cos(a)*d}%;top:${s.ty+Math.sin(a)*d}%;opacity:0`;
+    });
+    sootEl.style.background = 'transparent';
+    sootEl.style.pointerEvents = 'none';
+    setTimeout(() => sootEl.innerHTML = '', 650);
+  }, 580);
+}
 
-    function typeSequence() {
-      if (typingIndex < currentLetterText.length) {
-        /* FIX: use textContent appending to avoid XSS and broken HTML */
-        typingBox.textContent += currentLetterText[typingIndex++];
-        typingBox.scrollTop = typingBox.scrollHeight;
-        typingTimer = setTimeout(typeSequence, 38);
-      } else {
-        letterStatusText.textContent = 'Letter completed with love 💖';
-      }
-    }
+/* ── RAIN ── */
+function initRain() {
+  const c = document.getElementById('rain-container');
+  c.innerHTML = '';
+  for(let i=0;i<52;i++){
+    const d=document.createElement('div');
+    d.className='rain-drop';
+    d.style.cssText=`left:${Math.random()*100}%;animation-duration:${Math.random()*1.2+0.9}s;animation-delay:${Math.random()*2.5}s;height:${Math.random()*26+30}px;opacity:${Math.random()*0.35+0.15}`;
+    c.appendChild(d);
+  }
+}
+ 
+/* ── RAIN RIPPLES ── */
+let rippleInterval = null;
+function startRipples() {
+  if(rippleInterval) return;
+  rippleInterval = setInterval(()=>{
+    const ground = document.getElementById('ripple-ground');
+    if(!ground) return;
+    const r = document.createElement('div');
+    r.className = 'ripple';
+    r.style.left = Math.random()*90+5 + '%';
+    ground.appendChild(r);
+    setTimeout(()=>r.remove(), 950);
+  }, 180);
+}
+function stopRipples() { clearInterval(rippleInterval); rippleInterval=null; }
+ 
+/* ── TOTORO BOUNCE ── */
+const totoroWrap = document.getElementById('totoro-wrap');
+totoroWrap.addEventListener('click', () => {
+  totoroWrap.classList.remove('bouncing');
+  void totoroWrap.offsetWidth; // reflow to restart
+  totoroWrap.classList.add('bouncing');
+  totoroWrap.addEventListener('animationend', () => totoroWrap.classList.remove('bouncing'), {once:true});
+});
+ 
+/* ── DAY / NIGHT TOGGLE (bus sign) ── */
+let skyMode = 'rain'; // 'rain' | 'starry'
+const artFrame = document.getElementById('art-frame');
+const starLayer = document.getElementById('star-layer');
+ 
+function buildStars() {
+  starLayer.innerHTML = '';
+  for(let i=0;i<28;i++){
+    const s=document.createElement('div');
+    s.className='art-star';
+    const sz=Math.random()*1.5+0.8;
+    s.style.cssText=`width:${sz}px;height:${sz}px;top:${Math.random()*75}%;left:${Math.random()*100}%;animation-duration:${Math.random()*2+2}s;animation-delay:${Math.random()*2}s;`;
+    starLayer.appendChild(s);
+  }
+}
 
-    function playChimeSound() {
-      try {
-        const ctx = new (window.AudioContext || window.webkitAudioContext)();
-        if (ctx.state === 'suspended') ctx.resume();
-        const osc  = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(523.25, ctx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(1046.50, ctx.currentTime + 0.35);
-        gain.gain.setValueAtTime(0.12, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4);
-        osc.start();
-        osc.stop(ctx.currentTime + 0.4);
-      } catch (e) { /* silently ignore if blocked */ }
-    }
+document.getElementById('bus-sign').addEventListener('click', e => {
+  e.stopPropagation();
+  if(skyMode === 'rain') {
+    skyMode = 'starry';
+    artFrame.classList.add('starry');
+    artFrame.classList.remove('daytime');
+    buildStars();
+    stopRipples();
+  } else {
+    skyMode = 'rain';
+    artFrame.classList.remove('starry');
+    artFrame.classList.remove('daytime');
+    startRipples();
+  }
+});
 
-    const canvas = document.getElementById('magic-canvas');
-    const ctx    = canvas.getContext('2d');
-    let particles = [];
-    let activeScene = 'home';
-    let releasedLanternCount = 0;
-    let isTransitioning = false;
+/* ambient */
+const ambBtn = document.getElementById('ambient-btn');
+const volIcon = document.getElementById('vol-icon');
+const rainAudio = document.getElementById('rain-audio');
+ambBtn.addEventListener('click', () => {
+  rainActive = !rainActive;
+  if (rainActive) {
+    ensureAudio();
+    rainAudio.volume = 0.25;   // keep rain quiet
+    rainAudio.play().catch(() => {});
+    volIcon.className = 'fas fa-volume-high';
+    ambBtn.classList.add('on');
+    startSynth();
+  } else {
+    rainAudio.pause();
+    rainAudio.currentTime = 0;
+    volIcon.className = 'fas fa-volume-xmark';
+    ambBtn.classList.remove('on');
+    stopSynth();
+  }
+});
 
-    function resizeCanvas() {
-      canvas.width  = window.innerWidth;
-      canvas.height = window.innerHeight;
-    }
-    resizeCanvas();
-    window.addEventListener('resize', resizeCanvas);
+/* ── MUSIC ── */
+function buildTracklist(){
+  const trackList = document.getElementById('track-list');
+  trackList.innerHTML='';
+  playlist.forEach((t,i)=>{
+    const btn=document.createElement('button');
+    btn.className='track-item'+(i===trackIdx?' active':'');
+    btn.style.cssText='width:100%;text-align:left;border:none;cursor:pointer;';
+    btn.innerHTML=`
+      <div class="track-icon">
+        <i class="fas ${i===trackIdx&&playing?'fa-compact-disc fa-spin':'fa-play'}"></i>
+      </div>
+      <div style="flex:1;min-width:0;">
+        <p class="track-name" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${t.title}</p>
+        <p class="track-artist">${t.artist}</p>
+      </div>
+    `;
+    btn.addEventListener('click',()=>selectTrack(i));
+    trackList.appendChild(btn);
+  });
+}
 
-    class Particle {
-      constructor(type) {
-        this.type = type;
-        this.x    = Math.random() * canvas.width;
-        this.y    = (type === 'lantern') ? canvas.height + 40 : Math.random() * canvas.height;
-        this.size = Math.random() * 6 + 3;
+function selectTrack(i) {
+  trackIdx = i;
+  document.getElementById('label-title').textContent = playlist[i].title;
+  document.getElementById('label-artist').textContent = playlist[i].artist;
+  document.getElementById('song-memo').textContent = playlist[i].memo;
 
-        if      (type === 'rain')    { this.speedY = Math.random()*4+4;  this.speedX = -0.5; this.color = 'rgba(128,0,32,0.2)'; }
-        else if (type === 'petal')   { this.speedY = Math.random()*1.5+0.5; this.speedX = Math.random()*1-0.5; this.color = ['#FFF0F5','#FFB7C5','#FFD1DC','#800020'][Math.floor(Math.random()*4)]; }
-        else if (type === 'star')    { this.speedY = -(Math.random()*0.3+0.1); this.speedX = Math.random()*0.4-0.2; this.color = 'rgba(255,209,220,0.8)'; }
-        else if (type === 'lantern') { this.speedY = -(Math.random()*1.0+0.4); this.speedX = 0; this.color = '#800020'; this.text = ''; this.size = Math.random()*6+7; }
+  const audio = document.getElementById('track-audio');
+  audio.volume = 1.0;          // ← full volume for music
+  audio.src = playlist[i].url;
+  audio.play().catch(() => {});
 
-        this.angle   = Math.random() * 360;
-        this.spin    = Math.random() * 2 - 1;
-        this.opacity = Math.random() * 0.6 + 0.3;
-      }
+  buildTracklist();
+  startPlaying();
+}
+ 
+function startPlaying() {
+  playing = true;
+  const audio = document.getElementById('track-audio');
+  audio.play().catch(() => {});          // ← add this line
+  document.getElementById('vinyl-disc').classList.add('vinyl-spin');
+  document.getElementById('tonearm').style.transform = 'rotate(22deg)';
+  document.getElementById('play-icon').className = 'fas fa-pause';
+  buildTracklist();
+  startNotes();
+  if (!synthOn) startSynth();
+}
+function stopPlaying() {
+  playing = false;
+  document.getElementById('track-audio').pause();
+  document.getElementById('vinyl-disc').classList.remove('vinyl-spin');
+  document.getElementById('tonearm').style.transform = 'rotate(4deg)';
+  document.getElementById('play-icon').className = 'fas fa-play';
+  buildTracklist();
+  stopNotes();
+}
+ 
+document.getElementById('play-btn').addEventListener('click', () => {
+  ensureAudio();
+  const audio = document.getElementById('track-audio');
+  if (playing) {
+    stopPlaying();
+  } else {
+    audio.play().catch(() => {});
+    startPlaying();
+  }
+});
+document.getElementById('next-btn').addEventListener('click', () => selectTrack((trackIdx+1)%playlist.length));
+document.getElementById('prev-btn').addEventListener('click', () => selectTrack((trackIdx-1+playlist.length)%playlist.length));
+ 
+const noteSyms = ['🎵','🎶','💚','✨','🍃','🌿'];
+function startNotes() {
+  if(noteTimer) clearInterval(noteTimer);
+  noteTimer = setInterval(() => {
+    const n = document.createElement('span');
+    n.className = 'note-p';
+    n.textContent = noteSyms[Math.floor(Math.random()*noteSyms.length)];
+    n.style.cssText = `left:${Math.random()*80+10}%;bottom:6px;opacity:1;`;
+    document.getElementById('note-emitter').appendChild(n);
+    setTimeout(() => { n.style.transform=`translateY(-55px) rotate(${Math.random()*36-18}deg) scale(1.2)`; n.style.opacity='0'; }, 40);
+    setTimeout(() => n.remove(), 1100);
+  }, 520);
+}
+function stopNotes() { clearInterval(noteTimer); }
 
-      update() {
-        this.y += this.speedY;
-        this.x += this.speedX;
-        this.angle += this.spin;
-        if (this.type === 'lantern') this.speedX = Math.sin(this.y * 0.02) * 0.6;
+/* ── LETTER ── */
+const letterEl = document.getElementById('typewritten-letter');
+function startTyping() {
+  clearTimeout(typingTimer);
+  letterEl.textContent = '';
+  typedIdx = 0;
+  letterEl.classList.add('typing');
+  tick();
+}
+function tick() {
+  if(typedIdx < letterText.length) {
+    letterEl.textContent += letterText[typedIdx];
+    const ch = letterText[typedIdx];
+    const delay = ch==='.'?300 : ch===','?110 : 26;
+    typedIdx++;
+    typingTimer = setTimeout(tick, delay);
+  } else {
+    letterEl.classList.remove('typing');
+  }
+}
+document.getElementById('restart-btn').addEventListener('click', () => { letterEl.classList.add('typing'); startTyping(); });
+document.getElementById('skip-btn').addEventListener('click', () => { clearTimeout(typingTimer); letterEl.textContent = letterText; letterEl.classList.remove('typing'); });
 
-        if (this.type === 'rain'  && this.y > canvas.height) { this.y = -10; this.x = Math.random()*canvas.width; }
-        if (this.type === 'petal' && this.y > canvas.height) { this.y = -10; this.x = Math.random()*canvas.width; }
-        if (this.type === 'star'  && this.y < -10)           { this.y = canvas.height+10; this.x = Math.random()*canvas.width; }
-      }
+/* ── LANTERNS ── */
+document.getElementById('send-wish').addEventListener('click', () => {
+  const text = document.getElementById('wish-input').value.trim();
+  if(!text) return;
+  releaseLantern(text);
+  document.getElementById('wish-input').value = '';
+});
 
-      draw() {
-        ctx.save();
-        ctx.translate(this.x, this.y);
-        ctx.globalAlpha = this.opacity;
+function releaseLantern(text) {
+  const el = document.createElement('div');
+  el.className = 'lantern-obj';
+  el.style.left = Math.random()*68+16 + '%';
+  el.innerHTML = `<div class="lantern-body">${text}</div><div class="lantern-base"></div><div class="lantern-flame"></div>`;
+  document.getElementById('lantern-container').appendChild(el);
+  setTimeout(() => el.remove(), 14200);
+}
 
-        if (this.type === 'rain') {
-          ctx.strokeStyle = this.color;
-          ctx.lineWidth = 1.5;
-          ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(0,15); ctx.stroke();
+function seedLanterns() {
+  const presets = ["Grow old together 🌿","Japan someday 🇯🇵","Infinite dates 🌸","Still us, always ☀️"];
+  presets.forEach((w,i) => setTimeout(() => releaseLantern(w), i*2700));
+}
 
-        } else if (this.type === 'petal') {
-          ctx.rotate(this.angle * Math.PI / 180);
-          ctx.fillStyle = this.color;
-          ctx.beginPath();
-          ctx.moveTo(0,0);
-          ctx.bezierCurveTo(-this.size,-this.size,-this.size*1.5,0,0,this.size*1.5);
-          ctx.bezierCurveTo(this.size*1.5,0,this.size,-this.size,0,0);
-          ctx.closePath(); ctx.fill();
+/* ── INIT ── */
+window.addEventListener('load', () => {
+  initRain();
+  startRipples();
 
-        } else if (this.type === 'star') {
-          ctx.fillStyle = this.color;
-          ctx.beginPath(); ctx.arc(0,0,this.size/2,0,Math.PI*2); ctx.fill();
+  // Load the first track so play button works immediately
+  const audio = document.getElementById('track-audio');
+  audio.src = playlist[0].url;
+  document.getElementById('label-title').textContent = playlist[0].title;
+  document.getElementById('label-artist').textContent = playlist[0].artist;
+  document.getElementById('song-memo').textContent = playlist[0].memo;
 
-        } else if (this.type === 'lantern') {
-          ctx.shadowBlur = 15; ctx.shadowColor = '#FFB7C5';
-          ctx.fillStyle = '#FFE4E1'; ctx.strokeStyle = '#800020'; ctx.lineWidth = 1.5;
-          const w=this.size*2, h=this.size*3, rx=-this.size, ry=-this.size*1.5, r=4;
-          ctx.beginPath();
-          ctx.moveTo(rx+r, ry);
-          ctx.lineTo(rx+w-r, ry);    ctx.quadraticCurveTo(rx+w, ry,   rx+w, ry+r);
-          ctx.lineTo(rx+w, ry+h-r);  ctx.quadraticCurveTo(rx+w, ry+h, rx+w-r, ry+h);
-          ctx.lineTo(rx+r, ry+h);    ctx.quadraticCurveTo(rx,   ry+h, rx,   ry+h-r);
-          ctx.lineTo(rx, ry+r);      ctx.quadraticCurveTo(rx,   ry,   rx+r, ry);
-          ctx.closePath(); ctx.fill(); ctx.stroke();
-
-          ctx.fillStyle = '#800020';
-          ctx.beginPath(); ctx.arc(0,0,this.size*0.4,0,Math.PI*2); ctx.fill();
-
-          ctx.strokeStyle = '#800020';
-          ctx.beginPath(); ctx.moveTo(0,this.size*1.5); ctx.lineTo(0,this.size*2.3); ctx.stroke();
-
-          if (this.text) {
-            ctx.shadowBlur = 0;
-            ctx.fillStyle = '#800020';
-            ctx.font = 'bold 8px Quicksand, sans-serif';
-            ctx.textAlign = 'center';
-            const label = this.text.length > 30 ? this.text.substring(0,30)+'…' : this.text;
-            ctx.fillText(label, 0, -this.size * 2);
-          }
-        }
-        ctx.restore();
-      }
-    }
-
-    function changeParticlesForScene(scene) {
-      const activeLanterns = particles.filter(p => p.type === 'lantern' && p.y > -50);
-      particles = [];
-      const type = ({ home:'rain', polaroids:'petal', letter:'petal', music:'star', lanterns:'star' })[scene] || 'star';
-      for (let i = 0; i < 35; i++) particles.push(new Particle(type));
-      particles.push(...activeLanterns);
-    }
-
-    function animateEngine() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      particles.forEach(p => { p.update(); p.draw(); });
-      requestAnimationFrame(animateEngine);
-    }
-
-    /* ── Scene navigation with fixed wipe ── */
-    function navigateToScene(sceneId) {
-      if (sceneId === activeScene || isTransitioning) return;
-      isTransitioning = true;
-      playChimeSound();
-
-      const wipe = document.getElementById('scene-wipe');
-
-      /* Step 1: slide wipe IN from right → center */
-      wipe.style.transition = 'transform 0.55s cubic-bezier(0.4,0,0.2,1)';
-      wipe.style.transform  = 'translateX(0%)';
-
-      setTimeout(() => {
-        /* Step 2: swap scene while covered */
-        document.querySelectorAll('.scene').forEach(s => s.classList.remove('active'));
-        document.getElementById(`scene-${sceneId}`).classList.add('active');
-
-        /* Update nav highlights */
-        document.querySelectorAll('.nav-btn').forEach(btn => {
-          btn.className = btn.className.replace(/active-nav|inactive-nav/, 'inactive-nav');
-        });
-        const navBtn = document.getElementById(`nav-${sceneId}`);
-        if (navBtn) navBtn.className = navBtn.className.replace('inactive-nav', 'active-nav');
-
-        activeScene = sceneId;
-        changeParticlesForScene(sceneId);
-
-        /* Step 3: slide wipe OUT to left */
-        wipe.style.transform = 'translateX(-100%)';
-
-        setTimeout(() => {
-          /* Step 4: teleport wipe back to right (off-screen) with no transition */
-          wipe.style.transition = 'none';
-          wipe.style.transform  = 'translateX(100%)';
-          /* Step 5: re-enable transition for next use */
-          requestAnimationFrame(() => requestAnimationFrame(() => {
-            wipe.style.transition = 'transform 0.55s cubic-bezier(0.4,0,0.2,1)';
-            isTransitioning = false;
-          }));
-        }, 600);
-
-      }, 580); /* wait for wipe-in to complete */
-    }
-
-    /* ── Lantern release ── */
-    function releaseSkyLantern() {
-      playChimeSound();
-      const customWish    = document.getElementById('custom-wish-input').value.trim();
-      const selectedPromise = document.getElementById('promise-selector').value;
-      const text = customWish !== '' ? customWish : selectedPromise;
-
-      const lantern  = new Particle('lantern');
-      lantern.text   = text;
-      lantern.x      = canvas.width / 2 + (Math.random() * 100 - 50);
-      lantern.y      = canvas.height + 20;
-      lantern.opacity = 0.85;
-      particles.push(lantern);
-
-      releasedLanternCount++;
-      document.getElementById('lantern-count-display').textContent = releasedLanternCount;
-      document.getElementById('custom-wish-input').value = '';
-    }
-
-    /* ── Polaroid flip ── */
-    function flipCard(cardInner) {
-      playChimeSound();
-      cardInner.classList.toggle('flipped');
-    }
-
-    /* ── Photo upload helpers ── */
-    function triggerPhotoUpload(event, inputId) {
-      event.stopPropagation(); /* prevent card flip */
-      document.getElementById(inputId).click();
-    }
-
-    /* FIX: inject <img> as a sibling, keep label element intact */
-    function previewChildhoodPhoto(event, containerId, labelId) {
-      const file = event.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        const container = document.getElementById(containerId);
-        /* Remove old placeholder SVG/img but keep the label div */
-        const label = document.getElementById(labelId);
-        /* Clear all children except label */
-        Array.from(container.children).forEach(child => {
-          if (child.id !== labelId) child.remove();
-        });
-        const img = document.createElement('img');
-        img.src = e.target.result;
-        img.className = 'w-full h-full object-cover rounded pointer-events-none';
-        container.insertBefore(img, label);
-      };
-      reader.readAsDataURL(file);
-    }
-
-    window.onload = function() {
-      changeParticlesForScene('home');
-      animateEngine();
-      lucide.createIcons();
-    };
+  buildTracklist();
+  seedLanterns();
+});

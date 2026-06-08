@@ -58,8 +58,8 @@
 
     /* ─── CLOUDS ─── */
     .cloud { position: fixed; border-radius: 50%; pointer-events: none; z-index: 0; }
-    .cloud-1 { top: 8vh; left: -120px; width: 200px; height: 80px; background: rgba(255,255,255,0.06); filter: blur(18px); animation: driftCloud 32s linear infinite; }
-    .cloud-2 { top: 22vh; left: -180px; width: 280px; height: 100px; background: rgba(255,255,255,0.04); filter: blur(22px); animation: driftCloud 48s linear infinite; animation-delay: -14s; }
+    .cloud-1 { top: 8vh; left: -120px; width: 200px; height: 80px; background: rgba(255, 255, 255, 0.521); filter: blur(18px); animation: driftCloud 32s linear infinite; }
+    .cloud-2 { top: 22vh; left: -180px; width: 280px; height: 100px; background: rgba(255,255,255,0.521); filter: blur(22px); animation: driftCloud 48s linear infinite; animation-delay: -14s; }
     @keyframes driftCloud {
       from { transform: translateX(-160px); }
       to   { transform: translateX(110vw); }
@@ -160,16 +160,12 @@
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      background: rgba(74,124,98,0.25);
-      border: 1px solid rgba(74,124,98,0.4);
       color: var(--sage);
       font-size: 10px;
       font-weight: 700;
       letter-spacing: 0.12em;
       text-transform: uppercase;
       padding: 5px 14px;
-      border-radius: 99px;
-      backdrop-filter: blur(8px);
     }
 
     /* ─── TYPOGRAPHY ─── */
@@ -199,6 +195,7 @@
       flex-direction: column;
       gap: 0;
     }
+
     @media (min-width: 768px) {
       #scene-bus { flex-direction: row; gap: 48px; }
     }
@@ -255,19 +252,19 @@
     .cta-btn {
       display: inline-flex;
       align-items: center;
-      gap: 8px;
-      background: var(--leaf);
+      gap: 10px;
       color: var(--cream);
-      font-family: 'Nunito', sans-serif;
-      font-weight: 700;
-      font-size: 14px;
-      padding: 14px 28px;
-      border-radius: 99px;
-      border: none;
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 13px 22px;
+      border: 1px solid rgba(92,138,106,0.5);
+      background: transparent;
+      border-radius: 3px;
       cursor: pointer;
-      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-      box-shadow: 0 8px 24px rgba(74,124,98,0.35);
-      align-self: center;
+      transition: all 0.25s;
+      width: fit-content;
     }
     @media (min-width: 768px) { .cta-btn { align-self: flex-start; } }
     .cta-btn:hover { background: var(--moss); transform: translateY(-3px); box-shadow: 0 16px 32px rgba(74,124,98,0.4); }
@@ -895,7 +892,7 @@
     <div class="scene-text-col">
       <div class="date-badge">
         <i class="fas fa-heart" style="color:var(--amber)"></i>
-        First Monthsary · June 24
+        First Monthsary · June 24, 2026
       </div>
 
       <h1 class="title-display" style="font-size: clamp(28px, 5vw, 46px);">
@@ -905,10 +902,6 @@
 
       <p class="body-text">
         I think about the first time I realized something was different — the way a single message from you could completely rearrange my whole day. It felt like standing in the rain and not wanting the umbrella, because the rain was somehow you. I still feel that way. I always will.
-      </p>
-
-      <p style="font-size:11px; color:var(--sage); font-style:italic;">
-        ☔ Click Totoro's umbrella to hold the rain away for a moment.
       </p>
 
       <button class="cta-btn" onclick="changeScene(1)">
@@ -989,12 +982,18 @@
           <path d="M84 44 Q100 28 116 44 Q100 50 84 44Z" fill="#356e4c"/>
           <line x1="100" y1="30" x2="100" y2="46" stroke="#1c3e2b" stroke-width="1.5"/>
           <!-- umbrella -->
-          <g id="umbrella-group">
-            <line x1="100" y1="88" x2="100" y2="-8" stroke="#4a3420" stroke-width="4" stroke-linecap="round"/>
-            <path d="M32,-8 Q100,-58 168,-8 Q134,-14 100,-8 Q66,-14 32,-8Z" fill="#c0392b"/>
-            <path d="M32,-8 L168,-8" stroke="#962d26" stroke-width="1.5"/>
-            <line x1="100" y1="-58" x2="100" y2="-66" stroke="#4a3420" stroke-width="3" stroke-linecap="round"/>
-            <circle cx="100" cy="-67" r="3.5" fill="#e2b071"/>
+          <g id="umbrella-group" style="transform-origin:155px 155px; transition:transform 0.6s cubic-bezier(0.34,1.56,0.64,1)">
+            <!-- stick -->
+            <line x1="155" y1="155" x2="155" y2="28" stroke="#4a3420" stroke-width="4" stroke-linecap="round"/>
+            <!-- handle hook -->
+            <path d="M155,155 Q155,170 142,170" stroke="#4a3420" stroke-width="4" stroke-linecap="round" fill="none"/>
+            <!-- canopy dome -->
+            <path d="M108,28 Q110,2 155,0 Q200,2 202,28 Q178,16 155,20 Q132,16 108,28Z" fill="#c0392b"/>
+            <!-- scallop edge -->
+            <path d="M108,28 Q120,40 133,28 Q144,40 155,28 Q166,40 178,28 Q190,40 202,28" stroke="#962d26" stroke-width="1.5" fill="none"/>
+            <!-- tip -->
+            <line x1="155" y1="0" x2="155" y2="-6" stroke="#4a3420" stroke-width="3" stroke-linecap="round"/>
+            <circle cx="155" cy="-7" r="3.5" fill="#e2b071"/>
           </g>
         </svg>
       </div>
@@ -1430,10 +1429,10 @@ document.getElementById('totoro-wrap').addEventListener('click', ()=>{
   umbrellaOpen = !umbrellaOpen;
   const ug = document.getElementById('umbrella-group');
   if(umbrellaOpen){
-    ug.style.transform='rotate(0deg) translateY(0)';
+    ug.style.transform = 'rotate(0deg)';
     spawnSplashes();
   } else {
-    ug.style.transform='rotate(118deg) translateY(-10px)';
+    ug.style.transform = 'rotate(110deg)';
   }
 });
 
