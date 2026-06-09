@@ -122,6 +122,7 @@ function goToScene(name) {
     currentScene = name;
     if (name === "totoro" && !totoroTriggered) totoroTriggered = true;
     if (name === "letter") setTimeout(startLetter, 300);
+    if (name === "finale") startFinale();
   });
 }
 
@@ -350,7 +351,11 @@ function releaseLantern() {
   const viewBtn = document.getElementById("view-wishes-btn");
   viewBtn.classList.add("visible");
 
-  if (wishCount === 1) {
+  if (
+    wishCount === 1 ||
+    (wishCount > 1 &&
+      document.getElementById("lantern-next-btn").style.display !== "block")
+  ) {
     const btn = document.getElementById("lantern-next-btn");
     btn.style.display = "block";
     btn.style.animation = "none";
@@ -451,6 +456,8 @@ function replayFromStart() {
   letterDone = false;
   wishCount = 0;
 
+  document.getElementById("totoro-speech-text").textContent =
+    "*Yawn* TAP ME! I have things to tell you!";
   document.getElementById("letter-salutation").textContent = "";
   document.getElementById("letter-body").innerHTML = "";
   const dateEl = document.getElementById("letter-date");
@@ -472,6 +479,11 @@ function replayFromStart() {
   wBtn.style.display = "none";
   wBtn.style.animation = "none";
 
+  const tBtn = document.getElementById("totoro-next-btn");
+  tBtn.style.opacity = "0";
+  tBtn.style.pointerEvents = "none";
+  totoroLineIdx = 0;
+
   document.getElementById("finale-text").textContent = "";
   document.getElementById("lantern-stars").innerHTML = "";
   document.getElementById("finale-stars").innerHTML = "";
@@ -491,8 +503,13 @@ if (saved) {
   try {
     wishes = JSON.parse(saved);
     wishCount = wishes.length;
-    if (wishCount > 0)
+    if (wishCount > 0) {
       document.getElementById("view-wishes-btn").classList.add("visible");
+      // add this ↓
+      const wBtn = document.getElementById("lantern-next-btn");
+      wBtn.style.display = "block";
+      wBtn.style.opacity = "1";
+    }
   } catch (e) {}
 }
 makeStars("stars-bg", 95);
