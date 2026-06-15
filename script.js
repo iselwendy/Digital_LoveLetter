@@ -34,7 +34,7 @@ const TOTORO_LINES = [
   "hey kassy... 👀",
   "pat asked me to deliver something special...",
   "today marks one whole month! 🎉",
-  'one month of "good morning" and "i miss you"...',
+  'one month of "i miss you"...',
   "one month of choosing each other, every single day 💜",
   "pat made you something. click the button below when you're ready~",
 ];
@@ -92,7 +92,7 @@ function advanceTotoroSpeech() {
   const openness = mouthShapes[totoroLineIdx] ?? 112;
   mouth.setAttribute("d", `M 90,104 Q 100,${openness} 110,104`);
   if (totoroLineIdx === TOTORO_LINES.length - 1) {
-    document.getElementById("bubble-tap-hint").style.opacity = "0";
+    document.getElementById("bubble-tap-hint").classList.add("hidden");
     const btn = document.getElementById("totoro-next-btn");
     btn.style.transition = "opacity 0.6s ease, transform 0.6s ease";
     btn.style.opacity = "1";
@@ -133,11 +133,26 @@ function openEnvelope() {
   music.playbackRate = 1.25;
   music.play().catch(() => {});
 
+  const btn = document.getElementById("volume-btn");
+  btn.classList.add("visible");
+
   const wrap = document.getElementById("envelope-wrap");
   wrap.style.transition = "transform 0.32s ease, opacity 0.32s ease";
   wrap.style.transform = "scale(1.18)";
   wrap.style.opacity = "0";
   setTimeout(() => goToScene("totoro"), 360);
+}
+
+function toggleVolume() {
+  const music = document.getElementById("bg-music");
+  const btn = document.getElementById("volume-btn");
+  if (music.muted) {
+    music.muted = false;
+    btn.textContent = "🔊";
+  } else {
+    music.muted = true;
+    btn.textContent = "🔇";
+  }
 }
 
 /* ════════════════════════════

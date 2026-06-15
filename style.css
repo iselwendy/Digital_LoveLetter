@@ -156,6 +156,38 @@ body {
   letter-spacing: 0.06em;
 }
 
+/* ════ VOLUME BUTTON ════ */
+#volume-btn {
+  position: fixed;
+  top: 14px;
+  right: 14px;
+  z-index: 9000;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(249, 208, 224, 0.15);
+  border: 1.5px solid rgba(212, 78, 122, 0.45);
+  color: rgba(249, 208, 224, 0.85);
+  font-size: 19px;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition:
+    background 0.2s,
+    transform 0.15s;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+#volume-btn.visible {
+  display: flex;
+}
+
+#volume-btn:active {
+  transform: scale(0.9);
+}
+
 /* ════ SCENE 0 — ENVELOPE ════ */
 #scene-loading {
   background: radial-gradient(
@@ -464,6 +496,12 @@ svg.envelope {
   color: rgba(90, 18, 48, 0.55);
   margin-top: 6px;
   animation: hint-pulse 2s ease-in-out infinite;
+  transition: opacity 0.3s;
+}
+
+.bubble-tap-hint.hidden {
+  opacity: 0 !important;
+  animation: none;
 }
 
 .totoro-container {
@@ -681,6 +719,13 @@ svg.totoro-svg {
   bottom: 10px;
   right: 10px;
   transform: rotate(-15deg);
+}
+
+.letter-salutation,
+.letter-body,
+.letter-closing,
+.letter-signature {
+  padding-left: clamp(20px, 5vw, 32px);
 }
 
 /* ── Letter controls row ── */
