@@ -1,37 +1,63 @@
 const GIRLFRIEND_NAME = "kassy";
 const YOUR_NAME = "pat";
 
-const LETTER_TEXT = `wow, i can't belive it's been a month already.
+const LETTER_TEXT = `i can't believe it's been a month already.
 
 honestly, 'di ko in-expect na i would feel this much in just one month. i didn't expect to care this much, this fast, but here we are and i'm completely defenseless against it.
 
 you know, i still remember that afternoon by the sea. i swear, fresh pa sa utak ko lahat. i can still taste the salt air if i think about it too hard. it drives me a little crazy that we haven't seen each other since then. you're over there with your family, living your life, and i'm just here, completely consumed by how much i miss you.
 
-it’s a lot to process tonight. right now, nakaupo lang ako rito, nakatulala, tracing back the steps of how i even got this deep, and my mind keeps looping back to the beginning.
+it’s a lot to process tonight. right now, i'm staring at nothing while tracing back the steps of how i even got this deep, and my mind keeps looping back to that one particular night.
 
-first time yatang i felt something different was nung nilakad natin 'yung megadike. back then, hindi ko ma-pinpoint kung ano 'yung feeling na 'yon. it's like, there's a quiet noise in the background where only silence used to live, and i think, i like the sound of it.
+first time yatang i felt something different was nung nilakad natin 'yung megadike. back then, hindi ko ma-pinpoint kung ano 'yung feeling na 'yon. it's like there's a quiet noise in the background where only silence used to live, and i think i liked the sound of it.
 
-and then, May 18 happened. 'yung swimming. i can still picture it so clearly: me, naka-lean against the railings, tapos pasulyap-sulyap lang sa 'yo lmao. i remember our index fingers touching. just that tiny contact and parang may nabunot sa spine ko. wala eh. that's when i felt it, that sudden, breathtaking drop in my chest. that was the moment the "thing" finally had a name. ayun, hindi ako mapakali the rest of the day. i remember walking home that night feeling so heavy. not the bad kind of heavy, but that specific, terrifying weight na maf-feel mo when you realize you like someone except, it was different this time.
+and then, May 18 happened. 'yung swimming. i can still picture it so clearly: me, naka-lean against the railings, tapos pasulyap-sulyap lang sa 'yo lmao. i remember our index fingers touching. just that tiny contact and parang may nabunot sa spine ko. wala eh. that's when i felt it, that sudden, breathtaking drop in my chest.
 
-that hit me out of nowhere.
+that was the moment the "thing" finally had a name.
 
-i don't know why it's different. too raw? too real? maybe. but it's also too honest.
+ayun, hindi ako mapakali the rest of the day. i remember walking home that night feeling so heavy. not the bad kind of heavy, but that specific, terrifying weight na maf-feel mo when you realize you like someone.
 
-and now, a month into this, hindi nawala 'yung feeling na 'yon. if anything, it's just become my reality. every time magp-pop up ka sa screen ko, my chest still does that same exact drop.
+except, it was different this time.
 
-i love how you think, i love your laugh, and i love how safe i feel with you.
+i don't know why it's different. maybe it's because this never felt forced. maybe it's because everything with you feels so natural. maybe it's because when i'm with you, i don't feel like i have to be anyone else.
 
-you deserve everything, you know.
+all i know is that it felt real.
 
-thank you for the random stories, for the cute tiktoks you send, and for always letting me be exactly who i am without ever making me feel weird.
+and when i asked you if we could make things official, i realized later that i forgot to tell you the most important part.
+
+that i liked you.
+
+sobrang kabado ako that day. honestly, i was clumsy as hell. i don't even think i said half of what i wanted to say. but somehow, despite all that, it worked out. and i'm really glad it did, because saying those words turned into one of the best decisions i've ever made.
+
+i don't think i've ever been this happy.
+
+and then recently, we found out we were actually classmates back in grade 2.
+
+that honestly felt unreal.
+
+maybe that's why you felt familiar from the start. maybe that's why being around you felt so easy. i don't know. maybe i'm just being sentimental. but finding that out made me smile more than it probably should have.
+
+it felt like discovering that our story started way earlier than either of us realized.
+
+and now, a month into this, hindi pa rin nawawala 'yung feeling na 'yon. if anything, it's become part of my everyday life.
+
+every time magp-pop up ka sa screen ko, my chest still does that same exact drop.
+
+i love how you think. i love your laugh. i love your random stories. i love the cute tiktoks you send. i love how safe i feel with you.
+
+more than anything, thank you for always letting me be exactly who i am without ever making me feel weird for it.
+
+you deserve all the good things this world has to offer, and i'm really grateful that somehow, i get to be part of your life.
 
 this is just the beginning of something i really, really hope goes on for a long time.
 
-happy 1st monthsary. 💕`;
+happy 1st monthsary. 💕
+
+i miss you. a lot.`;
 
 const TOTORO_LINES = [
   "*yawn* TAP ME! i have things to tell you!",
-  "hey kassy... 👀",
+  "hey, kassy... 👀",
   "pat asked me to deliver something special...",
   "today marks one whole month! 🎉",
   'one month of "i miss you"...',
@@ -203,7 +229,7 @@ function startLetter() {
     bodyEl.appendChild(cursor);
 
     let idx = 0;
-    const BASE_SPEED = 26;
+    const BASE_SPEED = 30;
 
     function typeBody() {
       if (typewriterAbort) {
@@ -473,6 +499,7 @@ function replayFromStart() {
 
   document.getElementById("totoro-speech-text").textContent =
     "*Yawn* TAP ME! I have things to tell you!";
+  document.getElementById("bubble-tap-hint").classList.remove("hidden");
   document.getElementById("letter-salutation").textContent = "";
   document.getElementById("letter-body").innerHTML = "";
   const dateEl = document.getElementById("letter-date");

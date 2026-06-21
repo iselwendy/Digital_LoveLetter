@@ -596,6 +596,7 @@ svg.totoro-svg {
   background: #fff8fb;
   border-radius: 3px;
   padding: clamp(28px, 7vw, 48px) clamp(22px, 6vw, 42px);
+  padding-top: var(--rule-offset);
   max-width: 580px;
   width: 100%;
   box-shadow:
@@ -606,12 +607,24 @@ svg.totoro-svg {
   position: relative;
   background-image: repeating-linear-gradient(
     transparent,
-    transparent 35px,
-    rgba(212, 78, 122, 0.13) 35px,
-    rgba(212, 78, 122, 0.13) 36px
+    transparent calc(var(--rule-h) - 1px),
+    rgba(212, 78, 122, 0.18) calc(var(--rule-h) - 1px),
+    rgba(212, 78, 122, 0.18) var(--rule-h)
   );
-  background-position: 0 12px;
+  background-position: 0 var(--rule-offset);
   flex-shrink: 0;
+}
+
+.letter-date,
+.letter-salutation,
+.letter-body,
+.letter-closing,
+.letter-signature {
+  line-height: 35px; /* = rule-h */
+  margin: 0;
+  margin-left: 10px;
+  padding-top: 0;
+  padding-bottom: 0;
 }
 
 .paper-sheet::before {
@@ -1088,7 +1101,7 @@ svg.totoro-svg {
 #wish-gallery {
   position: fixed;
   inset: 0;
-  z-index: 8888;
+  z-index: 100000;
   background: rgba(20, 5, 15, 0.92);
   backdrop-filter: blur(6px);
   display: flex;
