@@ -498,7 +498,7 @@ function replayFromStart() {
   wishCount = 0;
 
   document.getElementById("totoro-speech-text").textContent =
-    "*Yawn* TAP ME! I have things to tell you!";
+    "*Yawn* TAP ME! i have things to tell you!";
   document.getElementById("bubble-tap-hint").classList.remove("hidden");
   document.getElementById("letter-salutation").textContent = "";
   document.getElementById("letter-body").innerHTML = "";
